@@ -21,6 +21,7 @@ function modalFactoryFactory($animate, $compile, $rootScope, $controller, $q, $h
         controllerAs  = config.controllerAs,
         container     = angular.element(config.container || document.body),
         element       = null,
+        activeDfd,
         html,
         scope;
 
@@ -36,11 +37,13 @@ function modalFactoryFactory($animate, $compile, $rootScope, $controller, $q, $h
     }
 
     function activate (locals) {
+      activeDfd = $q.defer();
       return html.then(function (html) {
         if (!element) {
           attach(html, locals);
         }
       });
+      return activeDfd.promise;
     }
 
 
@@ -70,6 +73,8 @@ function modalFactoryFactory($animate, $compile, $rootScope, $controller, $q, $h
 
     function deactivate () {
       if (!element) {
+        activeDfd.resolve();
+        
         return $q.when();
       }
       return $animate.leave(element).then(function () {
@@ -77,6 +82,8 @@ function modalFactoryFactory($animate, $compile, $rootScope, $controller, $q, $h
         scope = null;
         element.remove();
         element = null;
+
+        activeDfd.resolve();
       });
     }
 
