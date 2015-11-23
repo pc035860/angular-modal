@@ -38,7 +38,7 @@ function modalFactoryFactory($animate, $compile, $rootScope, $controller, $q, $h
 
     function activate (locals) {
       activeDfd = $q.defer();
-      return html.then(function (html) {
+      html.then(function (html) {
         if (!element) {
           attach(html, locals);
         }
@@ -73,8 +73,10 @@ function modalFactoryFactory($animate, $compile, $rootScope, $controller, $q, $h
 
     function deactivate () {
       if (!element) {
-        activeDfd.resolve();
-        
+        if (activeDfd) {
+          activeDfd.resolve();
+        }
+
         return $q.when();
       }
       return $animate.leave(element).then(function () {
